@@ -1,0 +1,97 @@
+/* ===================================================================
+    EXODUS THEME - FINAL VERSION
+   =================================================================== */
+
+/* Universal */
+* {
+    color: #EAEAEB;
+    border: none;
+    outline: 0;
+    -qt-font-smoothing: antialiased;
+}
+
+/* Main Window & Sidebar */
+QMainWindow { background-color: #111111; }
+QListWidget { background-color: transparent; padding: 10px; }
+QListWidget::item {
+    background-color: transparent;
+    border-radius: 6px;
+    margin: 4px 0px;
+    padding: 16px;
+    color: #8A95C1;
+    font-weight: 600;
+}
+QListWidget::item:hover { background-color: #151515; color: #EAEAEB; }
+QListWidget::item:selected { background-color: #8A95C1; color: #111111; }
+
+/* Content Cards & Groups */
+QFrame#card_frame, QFrame#group_frame {
+    background-color: #151515;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+QLabel#title_label {
+    font-size: 18pt;
+    font-weight: 300;
+    color: #FFFFFF;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+}
+QLabel#section_title {
+    background-color: #111111;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 11pt;
+    font-weight: 600;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+QLabel { color: #8A95C1; font-weight: 400; font-size: 9pt; }
+
+/* Buttons */
+QPushButton {
+    background-color: #111111;
+    color: #8A95C1;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 600;
+}
+QPushButton:hover { background-color: #1A1A1A; border-color: rgba(255, 255, 255, 0.1); color: #EAEAEB; }
+QPushButton#start_button, QPushButton#primary_button {
+    background-color: #8A95C1;
+    color: #111111;
+}
+QPushButton#stop_button { border-color: #8A95C1; }
+
+/* Inputs */
+QSlider::groove:horizontal { background-color: #111111; height: 4px; border-radius: 2px; border: 1px solid rgba(255, 255, 255, 0.05); }
+QSlider::sub-page:horizontal { background-color: #8A95C1; border-radius: 2px; }
+QSlider::handle:horizontal { background-color: #EAEAEB; width: 6px; height: 16px; margin: -7px -1px; border-radius: 3px; }
+
+QLineEdit, QSpinBox { background-color: #111111; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; padding: 8px; font-weight: 500; }
+QPushButton#customComboBox {
+    background-color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    padding: 8px;
+    font-weight: 500;
+    text-align: left;
+}
+QMenu#customMenu { background-color: #151515; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 5px; }
+QMenu#customMenu::item:selected { background-color: #8A95C1; color: #111111; }
+
+/* Table Styles */
+QTableWidget { background-color: #111111; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; gridline-color: rgba(255, 255, 255, 0.05); }
+QHeaderView::section { background-color: #151515; color: #FFFFFF; font-weight: 600; padding: 12px; border: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+QTableWidget::item { padding: 10px; color: #8A95C1; border: none; }
+QTableWidget::item:selected { background-color: #8A95C1; color: #111111; }
+QTableWidget:focus, QTableWidget::item:focus { outline: none; }
+
+/* Grouped Setting Row */
+QFrame#setting_row {
+    background-color: transparent; /* No background needed for rows inside a GroupFrame */
+    padding: 0px;
+    border: none;
+}
