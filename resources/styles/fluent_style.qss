@@ -1,5 +1,5 @@
 /* ===================================================================
-    EXODUS THEME - FINAL VERSION
+    SMITE THEME - FINAL VERSION
    =================================================================== */
 
 /* Universal */
@@ -63,14 +63,84 @@ QPushButton#start_button, QPushButton#primary_button {
     background-color: #8A95C1;
     color: #111111;
 }
+QPushButton#delete_button {
+    background-color: #111111;
+    color: #8A95C1;
+}
+QPushButton#delete_button:hover {
+    background-color: #454545;
+    color: #EAEAEB;
+}
 QPushButton#stop_button { border-color: #8A95C1; }
+
+/* Profiles List */
+QListWidget#profiles_list_widget {
+    background-color: transparent;
+    border: none;
+}
+QListWidget#profiles_list_widget::item {
+    border-radius: 8px;
+    background-color: transparent;
+    padding: 0px;
+    margin: 2px 0;
+}
+QListWidget#profiles_list_widget::item:hover {
+    background-color: rgba(138, 149, 193, 0.1);
+}
+QListWidget#profiles_list_widget::item:selected {
+    background-color: rgba(138, 149, 193, 0.2);
+}
 
 /* Inputs */
 QSlider::groove:horizontal { background-color: #111111; height: 4px; border-radius: 2px; border: 1px solid rgba(255, 255, 255, 0.05); }
 QSlider::sub-page:horizontal { background-color: #8A95C1; border-radius: 2px; }
 QSlider::handle:horizontal { background-color: #EAEAEB; width: 6px; height: 16px; margin: -7px -1px; border-radius: 3px; }
 
-QLineEdit, QSpinBox { background-color: #111111; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; padding: 8px; font-weight: 500; }
+QLineEdit, QSpinBox {
+    background-color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    padding: 8px;
+    font-weight: 500;
+    selection-background-color: #8A95C1;
+    selection-color: #111111;
+}
+
+/* --- FINAL, GUARANTEED FIX FOR SPINBOX STYLING --- */
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: transparent;
+    border: none;
+    width: 22px; /* Set a fixed width for the button area */
+}
+
+QSpinBox::up-button {
+    subcontrol-position: top right;
+    margin-right: 2px;
+}
+
+QSpinBox::down-button {
+    subcontrol-position: bottom right;
+    margin-right: 2px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: rgba(138, 149, 193, 0.1);
+    border-radius: 3px;
+}
+
+QSpinBox::up-arrow {
+    image: url(resources/icons/spinbox/arrow-up.svg);
+    width: 12px;
+    height: 12px;
+}
+
+QSpinBox::down-arrow {
+    image: url(resources/icons/spinbox/arrow-down.svg);
+    width: 12px;
+    height: 12px;
+}
+/* -------------------------------------------------- */
+
 QPushButton#customComboBox {
     background-color: #111111;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -78,7 +148,14 @@ QPushButton#customComboBox {
     padding: 8px;
     font-weight: 500;
     text-align: left;
+    color: #8A95C1;
 }
+
+QPushButton#customComboBox:disabled {
+    color: #8A95C1;
+    opacity: 0.7;
+}
+
 QMenu#customMenu { background-color: #151515; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 5px; }
 QMenu#customMenu::item:selected { background-color: #8A95C1; color: #111111; }
 
@@ -91,7 +168,7 @@ QTableWidget:focus, QTableWidget::item:focus { outline: none; }
 
 /* Grouped Setting Row */
 QFrame#setting_row {
-    background-color: transparent; /* No background needed for rows inside a GroupFrame */
+    background-color: transparent;
     padding: 0px;
     border: none;
 }

@@ -1,98 +1,60 @@
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QHBoxLayout, 
                              QPushButton, QLineEdit, QFrame, QListWidgetItem,
-                             QListWidget, QStyledItemDelegate, QStyle)
-from PyQt6.QtCore import Qt, QSize, pyqtSignal, QEvent, QPoint, QRect
-from PyQt6.QtGui import QColor, QBrush, QPainter
+                             QListWidget)
+from PyQt6.QtCore import Qt, QSize, pyqtSignal
 from ui.views.warning_dialog import CustomDialog
-from core.icon_manager import IconManager
 
-# --- START: DEFINITIVE, SELF-CONTAINED WIDGETS ---
-
-class ProfileDelegate(QStyledItemDelegate):
-    load_triggered = pyqtSignal(int)
-    delete_triggered = pyqtSignal(int)
-
-    def paint(self, painter, option, index):
-        super().paint(painter, option, index)
-        profile_name = index.data(Qt.ItemDataRole.DisplayRole)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        
-        text_color = QColor("#1A1B26") if option.state & QStyle.StateFlag.State_Selected else QColor("#A0A0A0")
-        if option.state & QStyle.StateFlag.State_MouseOver:
-            text_color = QColor("#F0F0F0")
-
-        painter.setPen(text_color)
-        font = painter.font()
-        font.setWeight(600)
-        painter.setFont(font)
-        
-        text_rect = option.rect.adjusted(12, 0, -180, 0) # Make space for buttons
-        painter.drawText(text_rect, Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft, profile_name)
-
-    def sizeHint(self, option, index):
-        return QSize(200, 50)
-
-class ProfileListWidget(QListWidget):
-    def __init__(self, delegate, parent=None):
+# --- A dedicated widget for each item in the profile list ---
+class ProfileItemWidget(QWidget):
+    def __init__(self, profile_id, profile_name, parent=None):
         super().__init__(parent)
-        self.setObjectName("profiles_list_widget")
-        self.setMouseTracking(True)
-        self.hover_index = -1
-        self._delegate = delegate
+        self.profile_id = profile_id
+        self.profile_name = profile_name
+        
+        self.init_ui()
+        self.set_connections()
+
+    def init_ui(self):
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(12, 0, 12, 0)
+        
+        self.name_label = QLabel(self.profile_name)
+        font = self.name_label.font()
+        font.setWeight(600)
+        self.name_label.setFont(font)
         
         self.load_button = QPushButton("Load")
         self.load_button.setObjectName("primary_button")
         self.load_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.load_button.setFixedSize(80, 30)
-        self.load_button.setParent(self.viewport())
         self.load_button.hide()
 
         self.delete_button = QPushButton("Delete")
+        self.delete_button.setObjectName("delete_button")
         self.delete_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self.delete_button.setFixedSize(80, 30)
-        self.delete_button.setParent(self.viewport())
         self.delete_button.hide()
-        
-        self.load_button.clicked.connect(self._on_load_clicked)
-        self.delete_button.clicked.connect(self._on_delete_clicked)
 
-    def _on_load_clicked(self):
-        if self.hover_index != -1:
-            self._delegate.load_triggered.emit(self.hover_index)
-            
-    def _on_delete_clicked(self):
-        if self.hover_index != -1:
-            self._delegate.delete_triggered.emit(self.hover_index)
+        layout.addWidget(self.name_label)
+        layout.addStretch()
+        layout.addWidget(self.load_button)
+        layout.addWidget(self.delete_button)
 
-    def updateButtons(self, index):
-        if index.isValid() and self.model().rowCount() > 0:
-            rect = self.visualRect(index)
-            button_y = rect.y() + (rect.height() - self.load_button.height()) // 2
-            
-            self.delete_button.move(rect.right() - self.delete_button.width() - 10, button_y)
-            self.load_button.move(self.delete_button.x() - self.load_button.width() - 5, button_y)
-            
-            self.load_button.show()
-            self.delete_button.show()
-        else:
-            self.load_button.hide()
-            self.delete_button.hide()
+    def set_connections(self):
+        # These signals will be connected in the main view
+        pass
 
-    def mouseMoveEvent(self, event):
-        index = self.indexAt(event.pos())
-        if index.isValid():
-            if index.row() != self.hover_index:
-                self.hover_index = index.row()
-                self.updateButtons(index)
-        super().mouseMoveEvent(event)
-        
+    def enterEvent(self, event):
+        self.load_button.show()
+        self.delete_button.show()
+        super().enterEvent(event)
+
     def leaveEvent(self, event):
-        self.hover_index = -1
-        self.updateButtons(self.model().index(-1, -1)) # Invalid index
+        self.load_button.hide()
+        self.delete_button.hide()
         super().leaveEvent(event)
 
-# --- END: DEFINITIVE, SELF-CONTAINED WIDGETS ---
-
+# --- Main Profiles View ---
 class ProfilesView(QWidget):
     def __init__(self, state_manager, db_manager, font_manager):
         super().__init__()
@@ -128,17 +90,11 @@ class ProfilesView(QWidget):
         save_layout.addWidget(save_btn)
         layout.addWidget(save_frame)
 
-        self.profile_delegate = ProfileDelegate(self)
-        self.profiles_list = ProfileListWidget(self.profile_delegate, self)
-        self.profiles_list.setItemDelegate(self.profile_delegate)
-        
-        self.profile_delegate.load_triggered.connect(self.load_profile_by_row)
-        self.profile_delegate.delete_triggered.connect(self.delete_profile_by_row)
-
+        self.profiles_list = QListWidget()
+        self.profiles_list.setObjectName("profiles_list_widget")
         layout.addWidget(self.profiles_list, 1)
         
         main_layout.addWidget(self.card_frame)
-
         apply_font_smoothing(self, self.font_manager.antialiased_font)
 
     def clearSelection(self):
@@ -146,26 +102,26 @@ class ProfilesView(QWidget):
 
     def load_profiles_list(self):
         self.profiles_list.clear()
-        for profile_id, name in self.db_manager.get_all_profiles():
-            item = QListWidgetItem(name)
-            item.setData(Qt.ItemDataRole.UserRole, profile_id)
+        profiles = self.db_manager.get_all_profiles()
+        for profile_id, name in profiles:
+            item = QListWidgetItem(self.profiles_list)
+            item.setSizeHint(QSize(200, 50))
+            
+            profile_widget = ProfileItemWidget(profile_id, name)
+            profile_widget.load_button.clicked.connect(lambda _, pid=profile_id: self.load_profile(pid))
+            profile_widget.delete_button.clicked.connect(lambda _, pid=profile_id, pname=name: self.delete_profile(pid, pname))
+            
             self.profiles_list.addItem(item)
+            self.profiles_list.setItemWidget(item, profile_widget)
     
-    def load_profile_by_row(self, row):
-        item = self.profiles_list.item(row)
-        if not item: return
-        profile_id = item.data(Qt.ItemDataRole.UserRole)
+    def load_profile(self, profile_id):
         name, settings = self.db_manager.get_profile(profile_id)
         if settings:
             self.state_manager.load_profile(settings)
             dialog = CustomDialog("info", "Success", f"Profile '{name}' loaded successfully.", show_cancel=False, parent=self)
             dialog.exec()
     
-    def delete_profile_by_row(self, row):
-        item = self.profiles_list.item(row)
-        if not item: return
-        profile_id = item.data(Qt.ItemDataRole.UserRole)
-        profile_name = item.text()
+    def delete_profile(self, profile_id, profile_name):
         dialog = CustomDialog("confirm", "Confirm Deletion", f"Are you sure you want to delete the profile '{profile_name}'?", parent=self)
         if dialog.exec():
             self.db_manager.delete_profile(profile_id)

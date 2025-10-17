@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.font_manager = font_manager
         self.setWindowTitle("Smite Autoclicker")
-        self.setGeometry(100, 100, 1000, 720)
+        self.setGeometry(100, 100, 900,500)
         self.setMinimumSize(850, 435)
         self.icons = IconManager()
         self.setWindowIcon(self.icons.get_icon("sidebar", "dashboard", "#FFFFFF", size=QSize(64, 64)))
